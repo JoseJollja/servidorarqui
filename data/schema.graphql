@@ -1,0 +1,152 @@
+    type Cliente {
+        id: ID
+        nombre: String
+        apellido: String
+        edad: Int
+        area: String
+        foto: String
+        emails: [Email]
+        tipo: TipoCliente
+    }
+    type Email {
+        email: String
+    }
+    type Producto {
+         id: ID
+         codigo : String
+         nombre : String
+         imagen : String
+         descripcion : String
+         precio : Int
+         stock : Int
+    }
+    
+    type Pedido {
+         id: ID
+         pedido : [PedidoProducto]
+         total: Int
+         fecha: String
+         cliente: ID
+         estado: EstadoPedido
+    }
+    
+    type PedidoProducto {
+         id: ID
+         cantidad: Int
+    }
+    type ClienteTotal {
+        total: Float
+        cliente: [Cliente]
+    }
+    type EncargadoTotal {
+        total: Float
+        encargado: [Usuario]
+    }
+
+    type Token {
+        token: String!
+    }
+
+    type Usuario {
+        id: ID
+        nombre: String
+        rol: String
+        usuario: String
+    }
+    """ Asigna la categoria del Cliente """
+    enum TipoCliente {
+        BASICO
+        PREMIUM
+    }
+    enum EstadoPedido {
+        PENDIENTE
+        COMPLETADO
+        DEVUELTO
+    }
+    type Query {
+        #cliente
+        getClientes(limite:Int, offset: Int) :[Cliente]
+        getCliente(id: ID!) : Cliente
+        totalClientes : String
+        
+        #producto
+        obtenerProductos(limite:Int, offset: Int, stock: Boolean):[Producto]
+        obtenerProducto(id: ID!): Producto
+        totalProductos : String
+
+        #pedidos
+        obtenerPedidos( cliente: ID) : [Pedido]
+
+        #graficas
+        topClientes : [ClienteTotal]
+        topEncargados : [EncargadoTotal]
+
+        #usuarios
+        obtenerUsuario : Usuario
+    }
+    input EmailInput {
+        email: String
+    }
+    """ Campos para los Clientes Nuevos """
+    input ClienteInput {
+        id: ID
+        nombre: String!
+        apellido: String!
+        edad: Int!
+        foto: String!
+        area: String!
+        emails: [EmailInput]
+        tipo: TipoCliente!
+        pedidos: [PedidoInput]
+    }
+    """ Campos para los Productos Nuevos """
+    input ProductoInput {
+        id: ID
+        codigo : String!
+        nombre : String!
+        imagen : String!
+        descripcion : String!
+        precio : Int!
+        stock : Int!
+    }
+
+    input PedidoInput {
+        id: ID
+        pedido : [PedidoProductoInput]
+        total: Int
+        fecha: String
+        cliente: ID
+        estado: EstadoPedido
+        encargado: ID
+    }
+    
+    input PedidoProductoInput {
+        id: ID
+        cantidad: Int
+    }
+
+    input UsuarioInput {
+        nombre: String
+        rol: String
+        usuario: String
+        password: String
+    }
+    """ Mutations para crear nuevos Clientes, Productos """
+    type Mutation {
+
+        """ Te permite crear, actualizar y eliminar nuevos clientes """
+        crearCliente(input: ClienteInput) : Cliente
+        actualizarCliente(input: ClienteInput) : Cliente
+        eliminarCliente(id:ID ) : String
+
+        """"  Te permite crear, actualizar y eliminar nuevos clientes  """
+        nuevoProducto(input: ProductoInput) : Producto 
+        actualizarProducto(input: ProductoInput) : Producto
+        eliminarProducto(id:ID! ) : String
+        #pedidos
+        nuevoPedido(input: PedidoInput) : Pedido   
+        actualizarEstado(input: PedidoInput) : String
+        #usuarios
+        crearUsuario( nombre: String!, rol: String!, usuario: String!, password: String!) : String
+        autenticarUsuario(usuario: String!, password: String!) : Token      
+    }
